@@ -1,0 +1,8 @@
+[package]
+name = "mnist_rustlib"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ndarray-npy = "0.10.0"
+npyz = "0.8.4"
