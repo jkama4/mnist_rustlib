@@ -27,6 +27,20 @@ pub fn product(
 }
 
 
+/// Calculate dot product between two vectors
+/// :vec_1 (Vec<f32>): vector
+/// :vec_2 (Vec<f32>): vector
+/// :return (f32): float number, resulting from the dot product
+pub fn dot(vec_1: &Vec<f32>, vec_2: &Vec<f32>) -> f32 {
+    let mut res = 0.0;
+
+    for (i, j) in izip!(vec_1, vec_2) {
+        res += i * j;
+    }
+    res
+}
+
+
 /// Convert a matrix into its transpose
 /// :mat (Matrix): a matrix
 /// :return (Matrix): transpose of the matrix, A^T
@@ -43,24 +57,34 @@ pub fn transpose(mat: &Matrix) -> Matrix {
 }
 
 
-/// Generate random kernel for initialisation
-/// :kernel_size (usize): the size of the kernel
+/// Generate random matrix for initialisation
+/// :n_rows (usize): number of rows of the matrix
+/// :n_cols (uszie): number of columns of the matrix
 /// :return (Matrix): generated kernel
-pub fn create_kernel(kernel_size: usize) -> Matrix {
+pub fn create_matrix(n_rows: usize, n_cols: usize) -> Matrix {
     let mut rng = rand::rng();
-    let mut kernel = vec![];
+    let mut mat = vec![];
 
-    for i in 0..kernel_size {
+    for i in 0..n_rows {
         let mut intermediate_row = vec![];
-        for j in 0..kernel_size {
+        for j in 0..n_cols {
             intermediate_row.push(
                 rng.random_range(-0.5..0.5)
             );
         }
-        kernel.push(intermediate_row);
+        mat.push(intermediate_row);
     }
-    kernel
+    mat
 }
+
+
+/// Generate random kernel for initialisation
+/// :kernel_size (usize): the size of the kernel
+/// :return (Matrix): generated kernel
+pub fn create_kernel(kernel_size: usize) -> Matrix {
+    create_matrix(kernel_size, kernel_size)
+}
+
 
 
 /// Extract a patch from a matrix

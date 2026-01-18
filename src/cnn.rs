@@ -1,6 +1,26 @@
 use crate::math;
 
 
+pub fn fc_layer(
+    input: &Vec<f32>, 
+    weights: &math::Matrix, 
+    bias: &Vec<f32>
+) -> Vec<f32> {
+
+    let mut output = vec![];
+
+    for col_idx in 0..weights[0].len() {
+        let mut intermediate_vec = vec![];
+        for row in weights {
+            intermediate_vec.push(row[col_idx]);
+        }
+        let score = math::dot(input, &intermediate_vec) + bias[col_idx];
+        output.push(score);
+    }
+    output
+
+}
+
 
 /// Perform a forward pass
 /// :input (Matrix): a matrix (8x8 image, sample from data)
