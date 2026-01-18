@@ -67,18 +67,18 @@ pub fn create_kernel(kernel_size: usize) -> Matrix {
 /// :mat (Matrix): a matrix
 /// :row_start (usize): row index to start from
 /// :col_start (usize): column index to start from
-/// :kernel_size (usize): size of the kernel
+/// :size (usize): size of the patch extracted
 pub fn extract_patch(
     mat: &Matrix, 
     row_start: usize, 
     col_start: usize, 
-    kernel_size: usize,
+    size: usize,
 ) -> Matrix {
 
     let mut patch = vec![];
-    for i in row_start..(row_start + kernel_size) {
+    for i in row_start..(row_start + size) {
         let mut intermediate_row = vec![];
-        for j in col_start..(col_start + kernel_size) {
+        for j in col_start..(col_start + size) {
             intermediate_row.push(mat[i][j]);
         }
         patch.push(intermediate_row);
@@ -112,8 +112,8 @@ pub fn cross_correlation(inp_mat: &Matrix, kernel: &Matrix) -> Matrix {
 /// Add a bias-value to the values of a matrix
 /// :mat (Matrix): a matrix (after cross-correlation)
 /// :bias (f32): a bias value, often a small number
-pub fn add_bias(mat: &Matrix, bias: f32) -> Matrix {
-    let mut updated_matrix = vec![];
+pub fn add_bias(mat: &Matrix, bias: &f32) -> Matrix {
+    let mut upd_mat = vec![];
 
     for row_idx in 0..mat.len() {
         let mut intermediate_row = vec![];
@@ -121,9 +121,9 @@ pub fn add_bias(mat: &Matrix, bias: f32) -> Matrix {
             let updated_value = mat[row_idx][col_idx] + bias;
             intermediate_row.push(updated_value);
         }
-        updated_matrix.push(intermediate_row);
+        upd_mat.push(intermediate_row);
     }
-    updated_matrix
+    upd_mat
 }
 
 
@@ -131,14 +131,40 @@ pub fn add_bias(mat: &Matrix, bias: f32) -> Matrix {
 /// :mat (Matrix): a matrix
 /// :return (Matrix): matrix with all values at least being 0.0
 pub fn relu(mat: &Matrix) -> Matrix {
-    let mut updated_matrix = vec![];
+    let mut upd_mat = vec![];
 
     for row_idx in 0..mat.len() {
         let mut intermediate_row = vec![];
         for col_idx in 0..mat[0].len() {
             intermediate_row.push(mat[row_idx][col_idx].max(0.0));
         }
-        updated_matrix.push(intermediate_row);
+        upd_mat.push(intermediate_row);
     }
-    updated_matrix
+    upd_mat
+}
+
+
+/// Reshape a flat array to a matrix
+/// :flat_vec (Vec<f32>): a flat array containing floats
+/// :width (usize): the width of the matrix (8 in this case)
+/// :return (Matrix): the reshaped matrix
+pub fn reshape(flat_vec: &Vec<f32>, width: usize) -> Matrix {
+    let mut resized_mat = vec![];
+    for chunk in flat_vec.chunks(width) {
+        resized_mat.push(chunk.to_vec());
+    }
+    resized_mat
+}
+
+
+/// Flatten a matrix to a list
+/// :mat (Matrix): a matrix
+/// :return (Vec<f32>): a flattened list
+pub fn flatten(mat: &Matrix) -> Vec<f32> {
+    let total_size = mat.len() * mat[0].len();
+    let mut flattened_list = Vec::with_capacity(total_size);
+    for row in mat {
+        flattened_list.extend(row);
+    }
+    flattened_list
 }
